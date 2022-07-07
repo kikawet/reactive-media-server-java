@@ -4,31 +4,50 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.example.http2.record.Page;
+
 @Component
 public class VideoService {
 
-    @Value("${video.basePath}")
-    private Path videoBasePath;
+	@Value("${video.basePath}")
+	private Path videoBasePath;
+	private static final Page defaulPagination = Page.from(1, 5);
 
-    public List<String> getAllVideos() throws IOException {
-        try (Stream<Path> stream = Files.list(videoBasePath)) {
-            return stream
-                    .filter(file -> !Files.isDirectory(file))
-                    .map(Path::getFileName)
-                    .map(Path::toString)
-                    .map(VideoService::removeExtension)
-                    .collect(Collectors.toUnmodifiableList());
-        }
-    }
+	public Optional<Path> getVideoPathFromName(String fileName) throws IOException {
+		try (Stream<Path> stream = Files.list(videoBasePath)) {
+			return stream.parallel()
+					.filter(file -> this.removeExtension(file.getFileName().toString())
+							.equals(fileName))
+					.findAny();
+		}
+	}
 
-    private static String removeExtension(String filename) {
-        return filename.split("\\.")[0];
-    }
+	public List<String> getAllVideos(Page page) throws IOException {
+		try (Stream<Path> stream = Files.list(videoBasePath)) {
+			return stream
+					.filter(file -> !Files.isDirectory(file))
+					.skip(page.skip())
+					.limit(page.limit())
+					.map(Path::getFileName)
+					.map(Path::toString)
+					.map(this::removeExtension)
+					.collect(Collectors.toUnmodifiableList());
+		}
+	}
+
+	public List<String> getAllVideos() throws IOException {
+		return this.getAllVideos(defaulPagination);
+	}
+
+	private String removeExtension(String filename) {
+		return filename.split("\\.")[0];
+	}
 
 }
