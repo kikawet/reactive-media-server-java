@@ -17,14 +17,18 @@ public class VideoService {
     private Path videoBasePath;
 
     public List<String> getAllVideos() throws IOException {
-        
         try (Stream<Path> stream = Files.list(videoBasePath)) {
-        return stream
-        .filter(file -> !Files.isDirectory(file))
-        .map(Path::getFileName)
-        .map(Path::toString)
-        .collect(Collectors.toList());
+            return stream
+                    .filter(file -> !Files.isDirectory(file))
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .map(VideoService::removeExtension)
+                    .collect(Collectors.toUnmodifiableList());
         }
+    }
+
+    private static String removeExtension(String filename) {
+        return filename.split("\\.")[0];
     }
 
 }
