@@ -1,0 +1,7 @@
+{"properties": [
+  {
+    "name": "video.basePath",
+    "type": "java.lang.String",
+    "description": "Base path where all the videos are located"
+  }
+]}
