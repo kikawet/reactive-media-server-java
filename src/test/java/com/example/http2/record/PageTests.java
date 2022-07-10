@@ -60,13 +60,13 @@ public class PageTests {
 
 	@Test
 	public void validationTest() {
-		Page page = Page.from(0, 0);
+		Page page = new Page(0, 0);
 
 		Set<ConstraintViolation<Page>> violations = validator.validate(page);
 
 		assertThat(violations).hasSize(2);
 
-		page = Page.from(1, 1);
+		page = new Page(1, 1);
 
 		violations = validator.validate(page);
 
