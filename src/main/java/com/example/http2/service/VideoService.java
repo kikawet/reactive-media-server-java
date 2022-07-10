@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.example.http2.record.Page;
 
-@Component
+@Service
 public class VideoService {
 
 	@Value("${video.basePath}")
@@ -29,7 +29,7 @@ public class VideoService {
 		}
 	}
 
-	public List<String> getAllVideos(Page page) throws IOException {
+	public List<String> getAllVideos(final Page page) throws IOException {
 		try (Stream<Path> stream = Files.list(videoBasePath)) {
 			return stream
 					.filter(file -> !Files.isDirectory(file))
