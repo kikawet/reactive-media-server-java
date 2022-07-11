@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.example.http2.record.Page;
 
@@ -23,7 +24,7 @@ public class VideoService {
 	public Optional<Path> getVideoPathFromName(String fileName) throws IOException {
 		try (Stream<Path> stream = Files.list(videoBasePath)) {
 			return stream.parallel()
-					.filter(file -> this.removeExtension(file.getFileName().toString())
+					.filter(file -> StringUtils.stripFilenameExtension(file.getFileName().toString())
 							.equals(fileName))
 					.findAny();
 		}
@@ -37,7 +38,7 @@ public class VideoService {
 					.limit(page.limit())
 					.map(Path::getFileName)
 					.map(Path::toString)
-					.map(this::removeExtension)
+					.map(StringUtils::stripFilenameExtension)
 					.collect(Collectors.toUnmodifiableList());
 		}
 	}
@@ -45,9 +46,4 @@ public class VideoService {
 	public List<String> getAllVideos() throws IOException {
 		return this.getAllVideos(defaulPagination);
 	}
-
-	private String removeExtension(String filename) {
-		return filename.split("\\.")[0];
-	}
-
 }
