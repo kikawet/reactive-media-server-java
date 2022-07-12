@@ -31,9 +31,9 @@ public class VideoController {
 		return videos.getAllVideos();
 	}
 
-	@GetMapping("/{partialName}")
-	public ResponseEntity<StreamingResponseBody> getVideo(@PathVariable String partialName) throws IOException {
-		Optional<Path> videoPathOpt = videos.getVideoPathFromName(partialName);
+	@GetMapping("/{name}")
+	public ResponseEntity<StreamingResponseBody> getVideo(@PathVariable String name) throws IOException {
+		Optional<Path> videoPathOpt = videos.getVideoPathFromName(name);
 
 		if (!videoPathOpt.isPresent())
 			return ResponseEntity.notFound().build();
