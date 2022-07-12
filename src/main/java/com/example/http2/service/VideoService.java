@@ -3,15 +3,17 @@ package com.example.http2.service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.example.http2.exception.ResourceNotFoundException;
 import com.example.http2.record.Page;
 
 @Service
@@ -21,29 +23,43 @@ public class VideoService {
 	private Path videoBasePath;
 	private static final Page defaulPagination = Page.from(1, 5);
 
-	public Optional<Path> getVideoPathFromName(String fileName) throws IOException {
+	@Autowired
+	private ResourceLoader resourceLoader;
+
+	public Resource getVideoByName(String fileName) {
+		Optional<Path> videoPath = Optional.empty();
+
 		try (Stream<Path> stream = Files.list(videoBasePath)) {
-			return stream.parallel()
+			videoPath = stream.parallel()
 					.filter(file -> StringUtils.stripFilenameExtension(file.getFileName().toString())
 							.equals(fileName))
 					.findAny();
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to access videos folder", e);
 		}
+
+		if (!videoPath.isPresent()) {
+			throw new ResourceNotFoundException();
+		}
+
+		return this.resourceLoader.getResource("file:" + videoPath.get());
 	}
 
-	public List<String> getAllVideos(final Page page) throws IOException {
-		try (Stream<Path> stream = Files.list(videoBasePath)) {
-			return stream
+	public Stream<String> getAllVideos(final Page page) {
+		try {
+			return Files.list(videoBasePath)
 					.filter(file -> !Files.isDirectory(file))
 					.skip(page.skip())
 					.limit(page.limit())
 					.map(Path::getFileName)
 					.map(Path::toString)
-					.map(StringUtils::stripFilenameExtension)
-					.collect(Collectors.toUnmodifiableList());
+					.map(StringUtils::stripFilenameExtension);
+		} catch (IOException e) {
+			throw new InternalError("Unable to access videos folder", e);
 		}
 	}
 
-	public List<String> getAllVideos() throws IOException {
+	public Stream<String> getAllVideos() {
 		return this.getAllVideos(defaulPagination);
 	}
 }
