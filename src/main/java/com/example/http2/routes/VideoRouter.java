@@ -25,7 +25,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Configuration
-public class VideoRoutes {
+public class VideoRouter {
 
 	@Autowired
 	private VideoService videos;
