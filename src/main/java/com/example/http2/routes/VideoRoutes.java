@@ -31,17 +31,17 @@ public class VideoRoutes {
 	private VideoService videos;
 
 	@Bean
-	RouterFunction<ServerResponse> getAllRoute() {
+	RouterFunction<ServerResponse> findAllVideosRoute() {
 		return route(GET("/video"), req -> ok()
 				.body(Flux.fromStream(videos.findAllVideos()).collectList(), List.class));
 	}
 
 	@Bean
-	RouterFunction<ServerResponse> getVideoByNameRoute() {
-		return route(GET("/video/{name}"), this::getVideoByNameHandler);
+	RouterFunction<ServerResponse> findVideoByNameRoute() {
+		return route(GET("/video/{name}"), this::findVideoByNameHandler);
 	}
 
-	public Mono<ServerResponse> getVideoByNameHandler(ServerRequest serverRequest) {
+	public Mono<ServerResponse> findVideoByNameHandler(ServerRequest serverRequest) {
 		final String name = serverRequest.pathVariable("name");
 
 		try {
