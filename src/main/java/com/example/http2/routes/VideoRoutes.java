@@ -33,7 +33,7 @@ public class VideoRoutes {
 	@Bean
 	RouterFunction<ServerResponse> getAllRoute() {
 		return route(GET("/video"), req -> ok()
-				.body(Flux.fromStream(videos.getAllVideos()).collectList(), List.class));
+				.body(Flux.fromStream(videos.findAllVideos()).collectList(), List.class));
 	}
 
 	@Bean
@@ -45,7 +45,7 @@ public class VideoRoutes {
 		final String name = serverRequest.pathVariable("name");
 
 		try {
-			final Resource video = videos.getVideoByName(name);
+			final Resource video = videos.findVideoByName(name);
 			final String mimeType = StringUtils.getFilenameExtension(video.getFilename().toString());
 
 			if (!video.exists())

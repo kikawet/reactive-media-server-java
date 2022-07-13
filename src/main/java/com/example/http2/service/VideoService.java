@@ -21,13 +21,12 @@ public class VideoService {
 
 	@Value("${video.basePath}")
 	private Path videoBasePath;
-	private static final Page defaulPagination = Page.from(1, 5);
+	public static final Page defaulPagination = Page.from(1, 5);
 
 	@Autowired
 	private VideoResourceLoader resourceLoader;
 
-	public Resource getVideoByName(String fileName) {
-
+	public Resource findVideoByName(String fileName) {
 		Optional<Path> videoPath = resourceLoader
 				.listFiles(videoBasePath)
 				.parallel()
@@ -42,7 +41,7 @@ public class VideoService {
 		return resourceLoader.getResource(videoPath.get().toString());
 	}
 
-	public Stream<String> getAllVideos(final Page page) {
+	public Stream<String> findAllVideos(final Page page) {
 		return resourceLoader.listFiles(videoBasePath)
 				.skip(page.skip())
 				.limit(page.limit())
@@ -51,7 +50,7 @@ public class VideoService {
 				.map(StringUtils::stripFilenameExtension);
 	}
 
-	public Stream<String> getAllVideos() {
-		return this.getAllVideos(defaulPagination);
+	public Stream<String> findAllVideos() {
+		return this.findAllVideos(defaulPagination);
 	}
 }
