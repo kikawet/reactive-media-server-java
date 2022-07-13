@@ -8,13 +8,10 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 @SpringBootTest
 public class HomeRouterTests extends BaseRouterTests {
 
-	public HomeRouterTests(@Autowired RouterFunction<?> redirectRoute) {
-		super(redirectRoute);
-	}
-
 	@Test
-	void redirectRouteTest() {
-		client.get()
+	void redirectRouteTest(@Autowired RouterFunction<?> redirectRoute) {
+		getWebTestClient(redirectRoute)
+				.get()
 				.uri("/")
 				.exchange()
 				.expectStatus()
