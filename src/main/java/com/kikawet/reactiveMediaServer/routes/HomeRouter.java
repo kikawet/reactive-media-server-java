@@ -1,4 +1,4 @@
-package com.example.http2.routes;
+package com.kikawet.reactiveMediaServer.routes;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;

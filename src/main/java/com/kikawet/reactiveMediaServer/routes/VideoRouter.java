@@ -1,4 +1,4 @@
-package com.example.http2.routes;
+package com.kikawet.reactiveMediaServer.routes;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
@@ -18,8 +18,8 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import com.example.http2.exception.ResourceNotFoundException;
-import com.example.http2.service.VideoService;
+import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
+import com.kikawet.reactiveMediaServer.service.VideoService;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

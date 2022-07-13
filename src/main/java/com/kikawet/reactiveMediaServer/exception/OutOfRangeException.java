@@ -1,4 +1,4 @@
-package com.example.http2.exception;
+package com.kikawet.reactiveMediaServer.exception;
 
 public class OutOfRangeException extends IllegalArgumentException {
 	public OutOfRangeException(final Object value, final Object min, final Object max) {

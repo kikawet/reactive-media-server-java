@@ -1,4 +1,4 @@
-package com.example.http2.service;
+package com.kikawet.reactiveMediaServer.service;
 
 import static org.springframework.util.StringUtils.stripFilenameExtension;
 
@@ -12,9 +12,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.example.http2.beans.VideoResourceLoader;
-import com.example.http2.exception.ResourceNotFoundException;
-import com.example.http2.record.Page;
+import com.kikawet.reactiveMediaServer.beans.VideoResourceLoader;
+import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
+import com.kikawet.reactiveMediaServer.record.Page;
 
 @Service
 public class VideoService {

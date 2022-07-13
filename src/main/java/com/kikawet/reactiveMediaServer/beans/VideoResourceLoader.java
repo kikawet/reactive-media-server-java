@@ -1,4 +1,4 @@
-package com.example.http2.beans;
+package com.kikawet.reactiveMediaServer.beans;
 
 import java.io.IOException;
 import java.nio.file.Files;

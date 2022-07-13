@@ -1,9 +1,9 @@
-package com.example.http2.record;
+package com.kikawet.reactiveMediaServer.record;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-import com.example.http2.exception.OutOfRangeException;
+import com.kikawet.reactiveMediaServer.exception.OutOfRangeException;
 
 public record Page(
 		@Min(1) int currentPage,

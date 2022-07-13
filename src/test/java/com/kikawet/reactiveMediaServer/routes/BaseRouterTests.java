@@ -1,4 +1,4 @@
-package com.example.http2.routes;
+package com.kikawet.reactiveMediaServer.routes;
 
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.RouterFunction;

@@ -1,4 +1,4 @@
-package com.example.http2.routes;
+package com.kikawet.reactiveMediaServer.routes;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

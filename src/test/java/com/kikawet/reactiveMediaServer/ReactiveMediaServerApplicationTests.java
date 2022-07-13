@@ -1,10 +1,10 @@
-package com.example.http2;
+package com.kikawet.reactiveMediaServer;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Http2ApplicationTests {
+class ReactiveMediaServerApplicationTests {
 
 	@Test
 	void contextLoads() {

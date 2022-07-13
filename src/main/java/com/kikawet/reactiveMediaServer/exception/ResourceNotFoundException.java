@@ -1,4 +1,4 @@
-package com.example.http2.exception;
+package com.kikawet.reactiveMediaServer.exception;
 
 import org.springframework.core.io.Resource;
 

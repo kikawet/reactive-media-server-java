@@ -1,4 +1,4 @@
-package com.example.http2.service;
+package com.kikawet.reactiveMediaServer.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,8 +21,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-import com.example.http2.beans.VideoResourceLoader;
-import com.example.http2.exception.ResourceNotFoundException;
+import com.kikawet.reactiveMediaServer.beans.VideoResourceLoader;
+import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
+import com.kikawet.reactiveMediaServer.service.VideoService;
 
 @SpringBootTest
 public class VideoServiceTests {
