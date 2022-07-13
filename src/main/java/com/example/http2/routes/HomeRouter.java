@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Configuration
-public class DefaultRouter {
+public class HomeRouter {
 
 	@Bean
 	RouterFunction<ServerResponse> redirectRoute() {
