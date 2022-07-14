@@ -29,7 +29,7 @@ public class VideoRouterTests extends BaseRouterTests {
 	}
 
 	@Test
-	void AllVideosTests(@Autowired RouterFunction<?> findAllVideoTitleRoute) {
+	void findAllVideoTitleRouteTest(@Autowired RouterFunction<?> findAllVideoTitleRoute) {
 		getWebTestClient(findAllVideoTitleRoute)
 				.get()
 				.uri("/video")
