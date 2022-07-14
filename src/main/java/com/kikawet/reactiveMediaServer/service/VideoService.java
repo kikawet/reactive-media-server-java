@@ -41,7 +41,7 @@ public class VideoService {
 		return resourceLoader.getResource(videoPath.get().toString());
 	}
 
-	public Stream<String> findAllVideos(final Page page) {
+	public Stream<String> findAllVideoTitle(final Page page) {
 		return resourceLoader.listFiles(videoBasePath)
 				.skip(page.skip())
 				.limit(page.limit())
@@ -50,7 +50,7 @@ public class VideoService {
 				.map(StringUtils::stripFilenameExtension);
 	}
 
-	public Stream<String> findAllVideos() {
-		return this.findAllVideos(defaulPagination);
+	public Stream<String> findAllVideoTitle() {
+		return this.findAllVideoTitle(defaulPagination);
 	}
 }

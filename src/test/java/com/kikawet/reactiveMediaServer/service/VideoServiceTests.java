@@ -57,7 +57,7 @@ public class VideoServiceTests {
 
 	@Test
 	void findAllVideosTest() {
-		assertThat(vService.findAllVideos()).isNotEmpty()
+		assertThat(vService.findAllVideoTitle()).isNotEmpty()
 				.allSatisfy(videoName -> assertThat(videoExtensions.stream()
 						.filter(extension -> videoName.contains((extension)))
 						.collect(Collectors.toUnmodifiableList())).isEmpty());
@@ -65,7 +65,7 @@ public class VideoServiceTests {
 
 	@Test
 	void findAllVideosPaginationTest() {
-		assertThat(vService.findAllVideos())
+		assertThat(vService.findAllVideoTitle())
 				.isNotEmpty()
 				.hasSize(VideoService.defaulPagination.pageSize());
 	}

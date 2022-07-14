@@ -31,9 +31,9 @@ public class VideoRouter {
 	private VideoService videos;
 
 	@Bean
-	RouterFunction<ServerResponse> findAllVideosRoute() {
+	RouterFunction<ServerResponse> findAllVideoTitleRoute() {
 		return route(GET("/video"), req -> ok()
-				.body(Flux.fromStream(videos.findAllVideos()).collectList(), List.class));
+				.body(Flux.fromStream(videos.findAllVideoTitle()).collectList(), List.class));
 	}
 
 	@Bean
