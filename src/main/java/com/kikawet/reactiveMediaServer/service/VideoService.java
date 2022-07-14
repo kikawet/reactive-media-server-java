@@ -21,7 +21,7 @@ public class VideoService {
 
 	@Value("${video.basePath}")
 	private Path videoBasePath;
-	public static final Page defaulPagination = Page.from(1, 5);
+	public static final Page defaulPagination = Page.from(1, 20);
 
 	@Autowired
 	private VideoResourceLoader resourceLoader;
