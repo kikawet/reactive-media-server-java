@@ -23,4 +23,6 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
+      env:
+        video.basePath: /home/runner/work/
       run: mvn -B package --file pom.xml
