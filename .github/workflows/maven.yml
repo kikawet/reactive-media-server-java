@@ -11,7 +11,9 @@ on:
 
 jobs:
   build:
-
+    env:
+        video.basePath: /home/runner/work/
+        
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +24,5 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      env:
-        video.basePath: /home/runner/work/
+    - name: Build with Maven      
       run: mvn -B package --file pom.xml
