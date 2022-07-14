@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     env:
-        video.basePath: /home/runner/work/
+        video.basePath.value: /home/runner/work/
         
     runs-on: ubuntu-latest
 
