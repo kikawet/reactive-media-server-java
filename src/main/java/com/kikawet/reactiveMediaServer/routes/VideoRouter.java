@@ -48,9 +48,6 @@ public class VideoRouter {
 			final Resource video = videos.findVideoByName(name);
 			final String mimeType = StringUtils.getFilenameExtension(video.getFilename().toString());
 
-			if (!video.exists())
-				return notFound().build();
-
 			return ok()
 					.contentType(MediaType.asMediaType(MimeType.valueOf("video/" + mimeType)))
 					.body(Mono.just(video), Resource.class);
