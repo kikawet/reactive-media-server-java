@@ -11,14 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.FluxExchangeResult;
-import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.server.RouterFunction;
 
 import com.kikawet.reactiveMediaServer.service.VideoService;
-
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
 
 @SpringBootTest
 public class VideoRouterTests extends BaseRouterTests {
@@ -30,12 +25,12 @@ public class VideoRouterTests extends BaseRouterTests {
 
 	@BeforeEach
 	void setUp() {
-		when(vs.findAllVideos()).thenReturn(videosList.stream());
+		when(vs.findAllVideoTitle()).thenReturn(videosList.stream());
 	}
 
 	@Test
-	void AllVideosTests(@Autowired RouterFunction<?> findAllVideosRoute) {
-		FluxExchangeResult<String> result = getWebTestClient(findAllVideosRoute)
+	void AllVideosTests(@Autowired RouterFunction<?> findAllVideoTitleRoute) {
+		getWebTestClient(findAllVideoTitleRoute)
 				.get()
 				.uri("/video")
 				.exchange()
@@ -43,17 +38,7 @@ public class VideoRouterTests extends BaseRouterTests {
 				.isOk()
 				.expectHeader()
 				.contentType(MediaType.APPLICATION_JSON)
-				.returnResult(String.class);
-
-		Flux<String> eventFlux = result.getResponseBody();
-
-		String expect = StringUtils.collectionToDelimitedString(videosList, ",","\"","\"");
-
-		expect = "[" + expect + "]";
-
-		StepVerifier.create(eventFlux)
-				.expectNext(expect)
-				.verifyComplete();
+				.expectBody(List.class)
+				.isEqualTo(videosList);
 	}
-
 }
