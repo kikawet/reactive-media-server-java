@@ -23,7 +23,6 @@ import org.springframework.core.io.Resource;
 
 import com.kikawet.reactiveMediaServer.beans.VideoResourceLoader;
 import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
-import com.kikawet.reactiveMediaServer.service.VideoService;
 
 @SpringBootTest
 public class VideoServiceTests {
