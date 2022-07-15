@@ -1,6 +1,6 @@
 
 video:
-    basePath: ${video.basePath.value}
+    basePath: ${VIDEO_BASEPATH}
 server:
   servlet:
     context-path: /
