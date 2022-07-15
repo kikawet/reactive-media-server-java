@@ -56,8 +56,8 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Build with Maven      
-      run: mvn -B package --file pom.xml
+    - name: Build + tests with Maven      
+      run: mvn -T 4 -B package --file pom.xml
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
