@@ -20,7 +20,7 @@ public class PageTests {
 	final Random rand = new Random();
 
 	public int getRand() {
-		return rand.nextInt(0, 100);
+		return rand.nextInt(1, 100);
 	}
 
 	@Test
