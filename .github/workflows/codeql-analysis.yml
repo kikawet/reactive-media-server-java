@@ -17,8 +17,6 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "main", develop ]
-  schedule:
-    - cron: '16 7 * * 6'
 
 jobs:
   analyze:
@@ -58,8 +56,8 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Build with Maven      
-      run: mvn -B package --file pom.xml
+    - name: Build + tests with Maven      
+      run: mvn -T 4 -B package --file pom.xml
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
