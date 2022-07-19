@@ -18,6 +18,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import com.kikawet.reactiveMediaServer.beans.PageableMapper;
 import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
 import com.kikawet.reactiveMediaServer.service.VideoService;
 
@@ -30,10 +31,18 @@ public class VideoRouter {
 	@Autowired
 	private VideoService videos;
 
+	@Autowired
+	private PageableMapper pm;
+
 	@Bean
 	RouterFunction<ServerResponse> findAllVideoTitleRoute() {
 		return route(GET("/video"), req -> ok()
-				.body(Flux.fromStream(videos.findAllVideoTitle()).collectList(), List.class));
+				.body(
+						Flux.fromStream(
+								videos.findAllVideoTitle(
+										pm.getPageable(req)))
+								.collectList(),
+						List.class));
 	}
 
 	@Bean
