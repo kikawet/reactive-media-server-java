@@ -21,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
+import com.kikawet.reactiveMediaServer.beans.PageableMapper;
 import com.kikawet.reactiveMediaServer.beans.VideoResourceLoader;
 import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
 
@@ -66,7 +67,7 @@ public class VideoServiceTests {
 	void findAllVideosPaginationTest() {
 		assertThat(vService.findAllVideoTitle())
 				.isNotEmpty()
-				.hasSize(VideoService.defaulPagination.pageSize());
+				.hasSize(PageableMapper.DEFAULT_PAGE_REQUEST.getPageSize());
 	}
 
 	@Test
