@@ -54,10 +54,12 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: maven
-
-    - name: Build + tests with Maven      
-      run: mvn -T 4 -B package --file pom.xml
+        cache: gradle
+        
+    - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+    # - name: Build + tests with Gradle      
+    #   run: gradle build
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
