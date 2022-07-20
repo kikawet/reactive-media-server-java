@@ -57,7 +57,7 @@ jobs:
         cache: gradle
         
     - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+      uses: github/codeql-action/autobuild@v2
     # - name: Build + tests with Gradle      
     #   run: gradle build
 
