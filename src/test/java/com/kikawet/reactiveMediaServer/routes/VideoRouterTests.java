@@ -1,5 +1,6 @@
 package com.kikawet.reactiveMediaServer.routes;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -32,7 +33,7 @@ public class VideoRouterTests extends BaseRouterTests {
 
 	@BeforeEach
 	void setUp() {
-		when(vs.findAllVideoTitle()).thenReturn(videosList.stream());
+		when(vs.findAllVideoTitle(any())).thenReturn(videosList.stream());
 		when(vs.findVideoByName(anyString())).thenThrow(ResourceNotFoundException.class);
 		when(vs.findVideoByName(eq("mockVideo"))).thenReturn(mockVideo);
 	}

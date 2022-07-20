@@ -9,19 +9,19 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.kikawet.reactiveMediaServer.beans.PageableMapper;
 import com.kikawet.reactiveMediaServer.beans.VideoResourceLoader;
 import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
-import com.kikawet.reactiveMediaServer.record.Page;
 
 @Service
 public class VideoService {
 
 	@Value("${video.basePath}")
 	private Path videoBasePath;
-	public static final Page defaulPagination = Page.from(1, 20);
 
 	@Autowired
 	private VideoResourceLoader resourceLoader;
@@ -41,16 +41,16 @@ public class VideoService {
 		return resourceLoader.getResource(videoPath.get().toString());
 	}
 
-	public Stream<String> findAllVideoTitle(final Page page) {
+	public Stream<String> findAllVideoTitle(final Pageable page) {
 		return resourceLoader.listFiles(videoBasePath)
-				.skip(page.skip())
-				.limit(page.limit())
+				.skip(page.getOffset())
+				.limit(page.getPageSize())
 				.map(Path::getFileName)
 				.map(Path::toString)
 				.map(StringUtils::stripFilenameExtension);
 	}
 
 	public Stream<String> findAllVideoTitle() {
-		return this.findAllVideoTitle(defaulPagination);
+		return this.findAllVideoTitle(PageableMapper.DEFAULT_PAGE_REQUEST);
 	}
 }
