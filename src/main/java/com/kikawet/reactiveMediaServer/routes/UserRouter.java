@@ -49,7 +49,7 @@ public class UserRouter {
 
 			return ok()
 					.contentType(MediaType.APPLICATION_JSON)
-					.body(fromStream(history).collectList(),
+					.body(fromStream(history),
 							List.class);
 		} catch (UnauthorizedUserException e) {
 			return status(HttpStatus.UNAUTHORIZED).build();
