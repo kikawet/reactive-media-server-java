@@ -28,7 +28,7 @@ import com.kikawet.reactiveMediaServer.service.UserService;
 import reactor.core.publisher.Mono;
 
 @Configuration
-public class UserRoute {
+public class UserRouter {
 	@Autowired
 	private UserService users;
 
