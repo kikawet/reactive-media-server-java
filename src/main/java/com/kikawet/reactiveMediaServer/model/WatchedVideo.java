@@ -2,6 +2,10 @@ package com.kikawet.reactiveMediaServer.model;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.PastOrPresent;
+
 import com.kikawet.reactiveMediaServer.dto.WatchedVideoDTO;
 
 import lombok.AllArgsConstructor;
@@ -14,7 +18,10 @@ import lombok.NoArgsConstructor;
 public class WatchedVideo {
 	User user;
 	Video video;
+	@PastOrPresent
 	LocalDateTime time;
+	@Min(0)
+	@Max(100)
 	float completionPercentage;
 
 	public WatchedVideoDTO toDTO() {
