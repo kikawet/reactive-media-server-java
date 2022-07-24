@@ -11,11 +11,11 @@ import lombok.Setter;
 @Setter
 public class User {
 	String login;
-	List<Video> avaiableVideos = new ArrayList<>();
+	List<Video> availableVideos = new ArrayList<>();
 	List<WatchedVideo> history = new ArrayList<>();
 
 	public Stream<Video> getVideos() {
-		return avaiableVideos.stream();
+		return availableVideos.stream();
 	}
 
 	public Stream<WatchedVideo> getHistory() {
