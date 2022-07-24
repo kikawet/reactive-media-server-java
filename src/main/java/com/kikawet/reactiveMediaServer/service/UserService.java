@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.kikawet.reactiveMediaServer.beans.PageableMapper;
 import com.kikawet.reactiveMediaServer.exception.UnauthorizedUserException;
 import com.kikawet.reactiveMediaServer.model.User;
 import com.kikawet.reactiveMediaServer.model.WatchedVideo;
@@ -17,6 +18,10 @@ public class UserService {
 	public UserService(Map<String, User> users) {
 		super();
 		this.users = users;
+	}
+
+	public Stream<WatchedVideo> getHistoryByLogin(String login) {
+		return this.getHistoryByLogin(login, PageableMapper.DEFAULT_PAGE_REQUEST);
 	}
 
 	public Stream<WatchedVideo> getHistoryByLogin(String login, Pageable page) {
