@@ -16,6 +16,8 @@ import org.springframework.util.StringUtils;
 import com.kikawet.reactiveMediaServer.beans.PageableMapper;
 import com.kikawet.reactiveMediaServer.beans.VideoResourceLoader;
 import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
+import com.kikawet.reactiveMediaServer.model.Video;
+import com.kikawet.reactiveMediaServer.repository.VideoRepository;
 
 @Service
 public class VideoService {
@@ -25,6 +27,19 @@ public class VideoService {
 
 	@Autowired
 	private VideoResourceLoader resourceLoader;
+
+	@Autowired
+	private VideoRepository videos;
+
+	public Video findVideoByTitle(String title) {
+		Video v = videos.findVideoByTitle(title);
+
+		if (v == null) {
+			throw new ResourceNotFoundException(title);
+		}
+
+		return v;
+	}
 
 	public Resource findVideoByName(String fileName) {
 		Optional<Path> videoPath = resourceLoader

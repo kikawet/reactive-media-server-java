@@ -1,14 +1,12 @@
 package com.kikawet.reactiveMediaServer.exception;
 
-import org.springframework.core.io.Resource;
-
 public class ResourceNotFoundException extends RuntimeException {
 	public ResourceNotFoundException() {
 		super();
 	}
 
-	public ResourceNotFoundException(Resource resource) {
-		super("Unable to access resource " + resource.getFilename());
+	public ResourceNotFoundException(String resourceName) {
+		super("Unable to find resource " + resourceName);
 	}
 
 	public ResourceNotFoundException(Exception e) {

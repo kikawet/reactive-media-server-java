@@ -1,6 +1,7 @@
 package com.kikawet.reactiveMediaServer.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -24,5 +25,9 @@ public class User {
 
 	public Stream<WatchedVideo> getHistory() {
 		return history.stream();
+	}
+
+	public boolean appendHistory(Collection<WatchedVideo> history) {
+		return history.addAll(history);
 	}
 }

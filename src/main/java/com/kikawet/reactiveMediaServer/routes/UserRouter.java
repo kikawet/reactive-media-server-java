@@ -4,6 +4,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
+import static org.springframework.web.reactive.function.server.ServerResponse.badRequest;
 import static org.springframework.web.reactive.function.server.ServerResponse.status;
 import static reactor.core.publisher.Flux.fromStream;
 
@@ -51,9 +52,18 @@ public class UserRouter {
 	}
 
 	public Mono<ServerResponse> updateHistoryByLoginHandler(ServerRequest serverRequest) {
-		throw new UnsupportedOperationException("updateHistoryByLoginHandler not implemented");
-		// return watcherValidationHandler.requireValidBodyList(serverRequest,
-		// validBody -> status(HttpStatus.CREATED).bodyValue(validBody));
+		final String login = serverRequest.pathVariable("login");
+
+		return watcherValidationHandler.requireValidBodyList(serverRequest,
+				newWatches -> {
+					boolean success = users.updateHistoryByLogin(login, newWatches);
+
+					if (success) {
+						return status(HttpStatus.CREATED).build();
+					}
+
+					return badRequest().build();
+				});
 	}
 
 	public Mono<ServerResponse> getHistoryByLoginHandler(ServerRequest serverRequest) {

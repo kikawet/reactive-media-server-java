@@ -1,37 +1,34 @@
 package com.kikawet.reactiveMediaServer.service;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.kikawet.reactiveMediaServer.exception.UnauthorizedUserException;
 import com.kikawet.reactiveMediaServer.model.User;
+import com.kikawet.reactiveMediaServer.repository.UserRepository;
 
 @SpringBootTest
 public class UserServiceTests {
 
+	@Autowired
 	UserService uService;
+
+	@MockBean
+	UserRepository users;
 
 	@BeforeEach
 	void setUp() {
-		var testUsers = getTestUsers();
-		uService = new UserService(testUsers);
-	}
-
-	Map<String, User> getTestUsers() {
-		HashMap<String, User> testUsers = new HashMap<>();
-
 		User u = new User();
 		u.setLogin("test");
 
-		testUsers.put(u.getLogin(), u);
-		return testUsers;
+		when(users.findById("test")).thenReturn(u);
 	}
 
 	@Test
