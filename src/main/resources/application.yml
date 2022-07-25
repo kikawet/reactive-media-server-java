@@ -1,6 +1,18 @@
 
 video:
     basePath: ${VIDEO_BASEPATH:unknown}
+
+spring:
+  # jpa.open-in-view: false
+  r2dbc:
+    url: ${DBURL:r2dbc:postgresql://localhost:5432/rmsDB}
+    username: ${DBUSR:rmsUser}
+    password: ${DBPWD:rmsPassword}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+
 server:
   servlet:
     context-path: /
