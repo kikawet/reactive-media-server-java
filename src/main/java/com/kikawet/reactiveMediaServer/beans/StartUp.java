@@ -38,6 +38,6 @@ public class StartUp {
 						new WatchedVideo(u, v, LocalDateTime.now(), 33))));
 
 		this.users.put(u.getLogin(), u);
-		this.videos.put(v.getTitle(), v);
+		this.videos.save(v);
 	}
 }

@@ -1,21 +1,12 @@
 package com.kikawet.reactiveMediaServer.repository;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
 import com.kikawet.reactiveMediaServer.model.Video;
 
-@Repository
-public class VideoRepository {
-	private static final Map<String, Video> videos = new HashMap<>();
+import reactor.core.publisher.Mono;
 
-	public Video findVideoByTitle(String title) {
-		return videos.get(title);
-	}
-
-	public void put(String title, Video video) {
-		videos.put(title, video);
-	}
+public interface VideoRepository extends ReactiveCrudRepository<Video, String>{
+	Mono<Video> findByTitle(String title);
+	Mono<Video> save(Video video);
 }

@@ -42,7 +42,7 @@ public class UserService {
 			WatchedVideo wv = new WatchedVideo();
 
 			wv.setUser(user);
-			wv.setVideo(videoService.findVideoByTitle(dto.getTitle()));
+			wv.setVideo(videoService.findVideoByTitle(dto.getTitle()).block());// TODO: remove this block ...
 			wv.setTime(dto.getTime());
 			wv.setCompletionPercentage(dto.getCompletionPercentage());
 

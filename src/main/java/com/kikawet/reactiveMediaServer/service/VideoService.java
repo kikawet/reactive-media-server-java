@@ -19,6 +19,8 @@ import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
 import com.kikawet.reactiveMediaServer.model.Video;
 import com.kikawet.reactiveMediaServer.repository.VideoRepository;
 
+import reactor.core.publisher.Mono;
+
 @Service
 public class VideoService {
 
@@ -31,14 +33,9 @@ public class VideoService {
 	@Autowired
 	private VideoRepository videos;
 
-	public Video findVideoByTitle(String title) {
-		Video v = videos.findVideoByTitle(title);
-
-		if (v == null) {
-			throw new ResourceNotFoundException(title);
-		}
-
-		return v;
+	public Mono<Video> findVideoByTitle(String title) {
+		return videos.findByTitle(title)
+				.switchIfEmpty(Mono.error(new ResourceNotFoundException(title)));
 	}
 
 	public Resource findVideoByName(String fileName) {
