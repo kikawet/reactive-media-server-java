@@ -19,9 +19,11 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.kikawet.reactiveMediaServer.beans.PageableMapper;
 import com.kikawet.reactiveMediaServer.dto.WatchedVideoDTO;
+import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
 import com.kikawet.reactiveMediaServer.exception.UnauthorizedUserException;
 import com.kikawet.reactiveMediaServer.model.WatchedVideo;
 import com.kikawet.reactiveMediaServer.service.UserService;
@@ -56,13 +58,22 @@ public class UserRouter {
 
 		return watcherValidationHandler.requireValidBodyList(serverRequest,
 				newWatches -> {
-					boolean success = users.updateHistoryByLogin(login, newWatches);
+					if (newWatches.isEmpty())
+						return ok().build();
 
-					if (success) {
-						return status(HttpStatus.CREATED).build();
+					try {
+						boolean success = users.updateHistoryByLogin(login, newWatches);
+
+						if (success)
+							return status(HttpStatus.CREATED).build();
+
+						return badRequest().build();
+
+					} catch (UnauthorizedUserException e) {
+						return status(HttpStatus.UNAUTHORIZED).build();
+					} catch (ResourceNotFoundException e) {
+						throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
 					}
-
-					return badRequest().build();
 				});
 	}
 

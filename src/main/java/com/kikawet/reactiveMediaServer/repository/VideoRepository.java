@@ -9,7 +9,7 @@ import com.kikawet.reactiveMediaServer.model.Video;
 
 @Repository
 public class VideoRepository {
-	private final Map<String, Video> videos = new HashMap<>();
+	private static final Map<String, Video> videos = new HashMap<>();
 
 	public Video findVideoByTitle(String title) {
 		return videos.get(title);

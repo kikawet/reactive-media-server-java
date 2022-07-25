@@ -1,6 +1,7 @@
 package com.kikawet.reactiveMediaServer.service;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class UserService {
 	public boolean updateHistoryByLogin(String login, Collection<WatchedVideoDTO> newWatches) {
 		User user = validateLogin(login);
 
-		return user.appendHistory(newWatches.stream().map(dto -> {
+		boolean result = user.appendHistory(newWatches.stream().map(dto -> {
 			WatchedVideo wv = new WatchedVideo();
 
 			wv.setUser(user);
@@ -46,7 +47,9 @@ public class UserService {
 			wv.setCompletionPercentage(dto.getCompletionPercentage());
 
 			return wv;
-		}).toList());
+		}).collect(Collectors.toList()));
+
+		return result;
 	}
 
 	private User validateLogin(String login) {

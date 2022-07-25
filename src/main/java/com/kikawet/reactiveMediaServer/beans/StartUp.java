@@ -1,7 +1,8 @@
 package com.kikawet.reactiveMediaServer.beans;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
 
@@ -30,10 +31,11 @@ public class StartUp {
 
 		u.setLogin("tom");
 
-		u.setHistory(List.of(
-				new WatchedVideo(u, v, LocalDateTime.now(), 17),
-				new WatchedVideo(u, v, LocalDateTime.now(), 69),
-				new WatchedVideo(u, v, LocalDateTime.now(), 33)));
+		u.setHistory(new ArrayList<>(
+				Arrays.asList(
+						new WatchedVideo(u, v, LocalDateTime.now(), 17),
+						new WatchedVideo(u, v, LocalDateTime.now(), 69),
+						new WatchedVideo(u, v, LocalDateTime.now(), 33))));
 
 		this.users.put(u.getLogin(), u);
 		this.videos.put(v.getTitle(), v);

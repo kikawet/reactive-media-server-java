@@ -28,6 +28,6 @@ public class User {
 	}
 
 	public boolean appendHistory(Collection<WatchedVideo> history) {
-		return history.addAll(history);
+		return this.history.addAll(history);
 	}
 }

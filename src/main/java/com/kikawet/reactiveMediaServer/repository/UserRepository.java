@@ -9,10 +9,14 @@ import com.kikawet.reactiveMediaServer.model.User;
 
 @Repository
 public class UserRepository {
-	private final Map<String, User> users = new HashMap<>();
+	private static final Map<String, User> users = new HashMap<>();
 
 	public User findById(String login) {
 		return users.get(login);
+	}
+
+	public void updateUser(User u) {
+		users.put(u.getLogin(), u);
 	}
 
 	public void put(String login, User u) {
