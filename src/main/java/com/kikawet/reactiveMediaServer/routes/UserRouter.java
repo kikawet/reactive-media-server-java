@@ -24,7 +24,7 @@ import com.kikawet.reactiveMediaServer.dto.WatchedVideoDTO;
 import com.kikawet.reactiveMediaServer.exception.UnauthorizedUserException;
 import com.kikawet.reactiveMediaServer.model.WatchedVideo;
 import com.kikawet.reactiveMediaServer.service.UserService;
-import com.kikawet.reactiveMediaServer.validator.WatcherVideoDTOValidationHandler;
+import com.kikawet.reactiveMediaServer.validation.WatcherVideoDTOValidationHandler;
 
 import reactor.core.publisher.Mono;
 
@@ -52,8 +52,8 @@ public class UserRouter {
 
 	public Mono<ServerResponse> updateHistoryByLoginHandler(ServerRequest serverRequest) {
 		throw new UnsupportedOperationException("updateHistoryByLoginHandler not implemented");
-		// return watcherValidationHandler.requireValidBody(serverRequest,
-		// validBody -> status(HttpStatus.CREATED).build());
+		// return watcherValidationHandler.requireValidBodyList(serverRequest,
+		// validBody -> status(HttpStatus.CREATED).bodyValue(validBody));
 	}
 
 	public Mono<ServerResponse> getHistoryByLoginHandler(ServerRequest serverRequest) {
