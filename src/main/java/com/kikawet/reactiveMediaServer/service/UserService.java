@@ -14,6 +14,7 @@ import com.kikawet.reactiveMediaServer.model.User;
 import com.kikawet.reactiveMediaServer.model.WatchedVideo;
 import com.kikawet.reactiveMediaServer.repository.UserRepository;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -39,8 +40,7 @@ public class UserService {
 	public Mono<Boolean> updateHistoryByLogin(String login, Collection<WatchedVideoDTO> newWatches) {
 		User user = validateLogin(login);
 
-		 return newWatches.stream().map(dto -> {
-
+		return Flux.concat(newWatches.stream().map(dto -> {
 			return videoService.findVideoByTitle(dto.getTitle()).map(video -> {
 				WatchedVideo wv = new WatchedVideo();
 
@@ -52,8 +52,9 @@ public class UserService {
 				return user.appendHistory(wv);
 			});
 
-		}).reduce(Mono.just(true), 
-		(monAcc, monBool) -> monAcc.flatMap(acc -> monBool.flatMap(bool -> Mono.just(bool && acc))));// Some nice callback hell in here
+		}).toList())
+				.takeUntil(x -> !x)
+				.reduce(true, (accum, value) -> accum && value);
 	}
 
 	private User validateLogin(String login) {
