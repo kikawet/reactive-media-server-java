@@ -61,19 +61,18 @@ public class UserRouter {
 					if (newWatches.isEmpty())
 						return ok().build();
 
-					try {
-						boolean success = users.updateHistoryByLogin(login, newWatches);
+					return users.updateHistoryByLogin(login, newWatches)
+							.flatMap(success -> {
+								if (success)
+									return status(HttpStatus.CREATED).build();
+								return badRequest().build();
+							})
+							.onErrorResume(UnauthorizedUserException.class,
+									e -> status(HttpStatus.UNAUTHORIZED).build())
+							.doOnError(ResourceNotFoundException.class, e -> {
+								throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+							});
 
-						if (success)
-							return status(HttpStatus.CREATED).build();
-
-						return badRequest().build();
-
-					} catch (UnauthorizedUserException e) {
-						return status(HttpStatus.UNAUTHORIZED).build();
-					} catch (ResourceNotFoundException e) {
-						throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-					}
 				});
 	}
 

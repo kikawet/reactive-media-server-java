@@ -17,6 +17,7 @@ import com.kikawet.reactiveMediaServer.repository.VideoRepository;
 
 @Component
 public class StartUp {
+	// TODO: remove this class when the user repo is done and move everything to sql
 
 	@Autowired
 	private UserRepository users;
@@ -38,6 +39,16 @@ public class StartUp {
 						new WatchedVideo(u, v, LocalDateTime.now(), 33))));
 
 		this.users.put(u.getLogin(), u);
-		this.videos.save(v);
+		Video video = this.videos.findByTitle(v.getTitle())
+		.map(vid -> {
+			System.out.println("Video " + vid.getTitle() + " already in database");
+			return vid;
+		})
+		.switchIfEmpty(this.videos.save(v))
+		.block();
+		// .subscribe((video) -> {
+			System.out.println("Saved video " + video.getTitle());
+		// });
+
 	}
 }

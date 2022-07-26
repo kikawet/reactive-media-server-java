@@ -8,10 +8,16 @@ spring:
     url: ${DBURL:r2dbc:postgresql://localhost:5432/rmsDB}
     username: ${DBUSR:rmsUser}
     password: ${DBPWD:rmsPassword}
+  flyway:
+    url: jdbc:postgresql://localhost:5432/rmsDB
+    user: ${spring.r2dbc.username}
+    password: ${spring.r2dbc.password}
+    enabled: true
   jpa:
+    open-in-view: false
     show-sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
 
 server:
   servlet:

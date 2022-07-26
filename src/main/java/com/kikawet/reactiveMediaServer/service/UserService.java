@@ -1,7 +1,6 @@
 package com.kikawet.reactiveMediaServer.service;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,8 @@ import com.kikawet.reactiveMediaServer.exception.UnauthorizedUserException;
 import com.kikawet.reactiveMediaServer.model.User;
 import com.kikawet.reactiveMediaServer.model.WatchedVideo;
 import com.kikawet.reactiveMediaServer.repository.UserRepository;
+
+import reactor.core.publisher.Mono;
 
 @Service
 public class UserService {
@@ -35,21 +36,24 @@ public class UserService {
 				.limit(page.getPageSize());
 	}
 
-	public boolean updateHistoryByLogin(String login, Collection<WatchedVideoDTO> newWatches) {
+	public Mono<Boolean> updateHistoryByLogin(String login, Collection<WatchedVideoDTO> newWatches) {
 		User user = validateLogin(login);
 
-		boolean result = user.appendHistory(newWatches.stream().map(dto -> {
-			WatchedVideo wv = new WatchedVideo();
+		 return newWatches.stream().map(dto -> {
 
-			wv.setUser(user);
-			wv.setVideo(videoService.findVideoByTitle(dto.getTitle()).block());// TODO: remove this block ...
-			wv.setTime(dto.getTime());
-			wv.setCompletionPercentage(dto.getCompletionPercentage());
+			return videoService.findVideoByTitle(dto.getTitle()).map(video -> {
+				WatchedVideo wv = new WatchedVideo();
 
-			return wv;
-		}).collect(Collectors.toList()));
+				wv.setUser(user);
+				wv.setVideo(video);
+				wv.setTime(dto.getTime());
+				wv.setCompletionPercentage(dto.getCompletionPercentage());
 
-		return result;
+				return user.appendHistory(wv);
+			});
+
+		}).reduce(Mono.just(true), 
+		(monAcc, monBool) -> monAcc.flatMap(acc -> monBool.flatMap(bool -> Mono.just(bool && acc))));// Some nice callback hell in here
 	}
 
 	private User validateLogin(String login) {

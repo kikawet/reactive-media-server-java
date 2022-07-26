@@ -65,4 +65,9 @@ public class VideoService {
 	public Stream<String> findAllVideoTitle() {
 		return this.findAllVideoTitle(PageableMapper.DEFAULT_PAGE_REQUEST);
 	}
+
+    public Mono<Video> createVideo(String title) {
+		Video v = new Video(title);
+        return this.videos.save(v);
+    }
 }

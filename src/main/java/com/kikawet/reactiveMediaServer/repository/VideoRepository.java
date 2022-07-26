@@ -6,7 +6,7 @@ import com.kikawet.reactiveMediaServer.model.Video;
 
 import reactor.core.publisher.Mono;
 
-public interface VideoRepository extends ReactiveCrudRepository<Video, String>{
+public interface VideoRepository extends ReactiveCrudRepository<Video, Long>{
 	Mono<Video> findByTitle(String title);
 	Mono<Video> save(Video video);
 }
