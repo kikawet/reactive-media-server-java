@@ -3,12 +3,10 @@ package com.kikawet.reactiveMediaServer.routes;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
-import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 import static org.springframework.web.reactive.function.server.ServerResponse.badRequest;
+import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 import static org.springframework.web.reactive.function.server.ServerResponse.status;
 import static reactor.core.publisher.Flux.fromStream;
-
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -80,14 +78,11 @@ public class UserRouter {
 		final String login = serverRequest.pathVariable("login");
 		final Pageable page = pm.getPageable(serverRequest);
 
-		try {
-			Stream<WatchedVideoDTO> history = users.getHistoryByLogin(login, page).map(WatchedVideo::toDTO);
-
-			return ok()
-					.contentType(MediaType.APPLICATION_JSON)
-					.body(fromStream(history), WatchedVideoDTO.class);
-		} catch (UnauthorizedUserException e) {
-			return status(HttpStatus.UNAUTHORIZED).build();
-		}
+		return users.getHistoryByLogin(login, page)
+				.map(history -> history.map(WatchedVideo::toDTO))
+				.flatMap(dtos -> ok()
+						.contentType(MediaType.APPLICATION_JSON)
+						.body(fromStream(dtos), WatchedVideoDTO.class))
+				.onErrorResume(UnauthorizedUserException.class, e -> status(HttpStatus.UNAUTHORIZED).build());
 	}
 }

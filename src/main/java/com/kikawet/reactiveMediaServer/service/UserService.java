@@ -26,21 +26,22 @@ public class UserService {
 	@Autowired
 	private VideoService videoService;
 
-	public Stream<WatchedVideo> getHistoryByLogin(String login) {
+	public Mono<Stream<WatchedVideo>> getHistoryByLogin(String login) {
 		return this.getHistoryByLogin(login, PageableMapper.DEFAULT_PAGE_REQUEST);
 	}
 
-	public Stream<WatchedVideo> getHistoryByLogin(String login, Pageable page) {
-		User user = validateLogin(login);
-		return user.getHistory()
-				.skip(page.getOffset())
-				.limit(page.getPageSize());
+	public Mono<Stream<WatchedVideo>> getHistoryByLogin(String login, Pageable page) {
+		return validateLogin(login).map(user ->
+
+		user.getHistory()
+			.skip(page.getOffset())
+			.limit(page.getPageSize()));
 	}
 
 	public Mono<Boolean> updateHistoryByLogin(String login, Collection<WatchedVideoDTO> newWatches) {
-		User user = validateLogin(login);
+		return validateLogin(login).flatMap(user ->
 
-		return Flux.concat(newWatches.stream().map(dto -> {
+		Flux.concat(newWatches.stream().map(dto -> {
 			return videoService.findVideoByTitle(dto.getTitle()).map(video -> {
 				WatchedVideo wv = new WatchedVideo();
 
@@ -54,14 +55,15 @@ public class UserService {
 
 		}).toList())
 				.takeUntil(x -> !x)
-				.reduce(true, (accum, value) -> accum && value);
+				.reduce(true, (accum, value) -> accum && value));
 	}
 
-	private User validateLogin(String login) {
-		User u = users.findById(login);
+	private Mono<User> validateLogin(String login) {
+		Mono<User> u = users.findByLogin(login);
 
 		if (u == null) {
-			throw new UnauthorizedUserException();
+			// throw new UnauthorizedUserException();
+			return Mono.error(new UnauthorizedUserException());
 		}
 
 		return u;

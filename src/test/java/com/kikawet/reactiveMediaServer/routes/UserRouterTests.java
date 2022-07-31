@@ -24,13 +24,15 @@ import com.kikawet.reactiveMediaServer.model.Video;
 import com.kikawet.reactiveMediaServer.model.WatchedVideo;
 import com.kikawet.reactiveMediaServer.service.UserService;
 
+import reactor.core.publisher.Mono;
+
 @SpringBootTest
 public class UserRouterTests extends BaseRouterTests {
 
 	@MockBean
 	UserService us;
 
-	private final User testUser = new User("test", null, null);
+	private final User testUser = new User("test");
 	private final Video testVideo = new Video("testVideo");
 	private final List<WatchedVideo> watchedVideos = List.of(
 			new WatchedVideo(testUser, testVideo, LocalDateTime.now(), 17),
@@ -39,8 +41,8 @@ public class UserRouterTests extends BaseRouterTests {
 
 	@BeforeEach
 	void setUp() {
-		when(us.getHistoryByLogin(anyString(), any())).thenThrow(UnauthorizedUserException.class);
-		when(us.getHistoryByLogin(eq("test"), any())).thenReturn(watchedVideos.stream());
+		when(us.getHistoryByLogin(anyString(), any())).thenReturn(Mono.error(new UnauthorizedUserException()));
+		when(us.getHistoryByLogin(eq("test"), any())).thenReturn(Mono.just(watchedVideos.stream()));
 	}
 
 	@Test
