@@ -1,26 +1,19 @@
 package com.kikawet.reactiveMediaServer.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @AllArgsConstructor
 @Getter
-@Table("VIDEO")
-@RequiredArgsConstructor
+@Entity
 @NoArgsConstructor
 public class Video {
 	@Id
-	@Column("ID_VIDEO")
-	Long id;
-
-	@Column("TITLE")
 	@NonNull
 	String title;
 }

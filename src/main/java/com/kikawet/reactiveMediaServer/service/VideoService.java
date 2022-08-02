@@ -20,6 +20,7 @@ import com.kikawet.reactiveMediaServer.model.Video;
 import com.kikawet.reactiveMediaServer.repository.VideoRepository;
 
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 
 @Service
 public class VideoService {
@@ -33,8 +34,12 @@ public class VideoService {
 	@Autowired
 	private VideoRepository videos;
 
+	@Autowired
+	private Scheduler scheduler;
+
 	public Mono<Video> findVideoByTitle(String title) {
-		return videos.findByTitle(title)
+		return Mono.fromCallable(() -> videos.findByTitle(title))
+				.publishOn(scheduler)
 				.switchIfEmpty(Mono.error(new ResourceNotFoundException(title)));
 	}
 
@@ -66,8 +71,12 @@ public class VideoService {
 		return this.findAllVideoTitle(PageableMapper.DEFAULT_PAGE_REQUEST);
 	}
 
-    public Mono<Video> createVideo(String title) {
+	public Mono<Video> createVideo(final String title) {
 		Video v = new Video(title);
-        return this.videos.save(v);
-    }
+
+		return this.findVideoByTitle(title)
+				.publishOn(scheduler)
+				.onErrorResume(e -> Mono.fromCallable(() -> this.videos.save(v)))
+				.publishOn(scheduler);
+	}
 }

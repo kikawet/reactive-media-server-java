@@ -1,7 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.7.2'
     id 'io.spring.dependency-management' version '1.0.12.RELEASE'
-    id 'org.flywaydb.flyway' version '9.0.2'
     id 'java'
 }
 
@@ -24,28 +23,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    // implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-    implementation 'org.flywaydb:flyway-core'
-    runtimeOnly 'org.postgresql:r2dbc-postgresql'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'org.springframework.boot:spring-boot-devtools'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
-    // testImplementation 'io.r2dbc:r2dbc-h2'
 }
 
 tasks.named('test') {
   useJUnitPlatform()
-}
-
-flyway {
-    url = "jdbc:postgresql://localhost:5432/rmsDB"
-    user = "rmsUser"
-    password = "rmsPassword"
-    baselineOnMigrate = true
-    cleanDisabled = false
-    locations = ["filesystem:src/main/resources/db/migration"]
 }

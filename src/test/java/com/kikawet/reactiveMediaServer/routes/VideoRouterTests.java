@@ -29,7 +29,7 @@ public class VideoRouterTests extends BaseRouterTests {
 	VideoService vs;
 
 	private final List<String> videosList = Arrays.asList("video1", "video2", "video3");
-	private final Resource mockVideo = new ClassPathResource("application.yml");
+	private final Resource mockVideo = new ClassPathResource("config/application.yml");
 
 	@BeforeEach
 	void setUp() {

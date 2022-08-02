@@ -15,7 +15,9 @@ import com.kikawet.reactiveMediaServer.model.User;
 import com.kikawet.reactiveMediaServer.model.Video;
 import com.kikawet.reactiveMediaServer.model.WatchedVideo;
 import com.kikawet.reactiveMediaServer.repository.UserRepository;
-import com.kikawet.reactiveMediaServer.repository.VideoRepository;
+import com.kikawet.reactiveMediaServer.service.VideoService;
+
+import reactor.core.publisher.Mono;
 
 @Component
 @Profile("!test")
@@ -29,12 +31,12 @@ public class StartUp {
 	private UserRepository users;
 
 	@Autowired
-	private VideoRepository videos;
+	private VideoService videos;
 
 	@PostConstruct
 	void setUp() {
 		User u = new User();
-		Video v = new Video(":D");
+		Video v = this.videos.createVideo(":D").block();
 
 		u.setLogin("tom");
 
@@ -51,19 +53,10 @@ public class StartUp {
 			System.out.println("User " + usr.getLogin() + " already in database");
 			return usr;
 		})
-		.switchIfEmpty(this.users.save(u))
+		.switchIfEmpty(Mono.just(this.users.save(u)))
 		.block();
 		
 		System.out.println("Saved user " + user.getLogin());
-
-		Video video = this.videos.findByTitle(v.getTitle())
-		.map(vid -> {
-			System.out.println("Video " + vid.getTitle() + " already in database");
-			return vid;
-		})
-		.switchIfEmpty(this.videos.save(v))
-		.block();
-		
-		System.out.println("Saved video " + video.getTitle());
+		System.out.println("Saved video " + v.getTitle());
 	}
 }
