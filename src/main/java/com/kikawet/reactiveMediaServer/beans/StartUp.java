@@ -17,8 +17,6 @@ import com.kikawet.reactiveMediaServer.model.WatchedVideo;
 import com.kikawet.reactiveMediaServer.repository.UserRepository;
 import com.kikawet.reactiveMediaServer.service.VideoService;
 
-import reactor.core.publisher.Mono;
-
 @Component
 @Profile("!test")
 public class StartUp {
@@ -40,6 +38,8 @@ public class StartUp {
 
 		u.setLogin("tom");
 
+		u.setAvailableVideos(Arrays.asList(v));
+
 		u.setHistory(new ArrayList<>(
 				Arrays.asList(
 						new WatchedVideo(u, v, LocalDateTime.now(), 17),
@@ -48,14 +48,11 @@ public class StartUp {
 
 		this.users.save(u);
 
-		User user = this.users.findByLogin(u.getLogin())
-		.map(usr -> {
-			System.out.println("User " + usr.getLogin() + " already in database");
-			return usr;
-		})
-		.switchIfEmpty(Mono.just(this.users.save(u)))
-		.block();
-		
+		User user = this.users.findByLogin(u.getLogin());
+		if (user == null) {
+			this.users.save(u);	
+		}
+
 		System.out.println("Saved user " + user.getLogin());
 		System.out.println("Saved video " + v.getTitle());
 	}

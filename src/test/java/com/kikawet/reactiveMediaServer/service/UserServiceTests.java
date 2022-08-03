@@ -13,7 +13,6 @@ import com.kikawet.reactiveMediaServer.exception.UnauthorizedUserException;
 import com.kikawet.reactiveMediaServer.model.User;
 import com.kikawet.reactiveMediaServer.repository.UserRepository;
 
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @SpringBootTest
@@ -30,7 +29,7 @@ public class UserServiceTests {
 		User u = new User();
 		u.setLogin("test");
 
-		when(users.findByLogin(u.getLogin())).thenReturn(Mono.just(u));
+		when(users.findByLogin(u.getLogin())).thenReturn(u);
 	}
 
 	@Test

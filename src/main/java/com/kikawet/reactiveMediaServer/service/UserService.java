@@ -16,6 +16,7 @@ import com.kikawet.reactiveMediaServer.repository.UserRepository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 
 @Service
 public class UserService {
@@ -25,6 +26,9 @@ public class UserService {
 
 	@Autowired
 	private VideoService videoService;
+
+	@Autowired
+	private Scheduler scheduler;
 
 	public Mono<Stream<WatchedVideo>> getHistoryByLogin(String login) {
 		return this.getHistoryByLogin(login, PageableMapper.DEFAULT_PAGE_REQUEST);
@@ -58,14 +62,9 @@ public class UserService {
 				.reduce(true, (accum, value) -> accum && value));
 	}
 
-	private Mono<User> validateLogin(String login) {
-		Mono<User> u = users.findByLogin(login);
-
-		if (u == null) {
-			// throw new UnauthorizedUserException();
-			return Mono.error(new UnauthorizedUserException());
-		}
-
-		return u;
+	private Mono<User> validateLogin(final String login){
+		return Mono.fromCallable(() -> users.findByLogin(login))
+		.publishOn(scheduler)
+		.switchIfEmpty(Mono.error(new UnauthorizedUserException()));
 	}
 }
