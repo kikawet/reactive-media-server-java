@@ -1,7 +1,9 @@
 package com.kikawet.reactiveMediaServer.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.persistence.Entity;
@@ -29,7 +31,7 @@ public class User {
 	String login;
 
 	@Transient
-	List<Video> availableVideos = new ArrayList<>();
+	Set<Video> availableVideos = new HashSet<>();
 	@Transient
 	List<WatchedVideo> history = new ArrayList<>();
 
@@ -41,7 +43,10 @@ public class User {
 		return history.stream();
 	}
 
-	public boolean appendHistory(WatchedVideo wv) {
+	public boolean addWatchVideo(WatchedVideo wv) {
+		if (!availableVideos.contains(wv.video))
+			return false;
+
 		return this.history.add(wv);
 	}
 }

@@ -3,6 +3,7 @@ package com.kikawet.reactiveMediaServer.beans;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -38,7 +39,7 @@ public class StartUp {
 
 		u.setLogin("tom");
 
-		u.setAvailableVideos(Arrays.asList(v));
+		u.setAvailableVideos(Set.of(v));
 
 		u.setHistory(new ArrayList<>(
 				Arrays.asList(

@@ -54,7 +54,7 @@ public class UserService {
 				wv.setTime(dto.getTime());
 				wv.setCompletionPercentage(dto.getCompletionPercentage());
 
-				return user.appendHistory(wv);
+				return user.addWatchVideo(wv);
 			});
 
 		}).toList())
