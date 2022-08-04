@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -30,8 +31,9 @@ public class User {
 	@NonNull
 	String login;
 
-	@Transient
+	@OneToMany
 	Set<Video> availableVideos = new HashSet<>();
+
 	@Transient
 	List<WatchedVideo> history = new ArrayList<>();
 
