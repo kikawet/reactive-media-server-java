@@ -25,6 +25,8 @@ import com.kikawet.reactiveMediaServer.beans.PageableMapper;
 import com.kikawet.reactiveMediaServer.beans.VideoResourceLoader;
 import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
 
+import reactor.test.StepVerifier;
+
 @SpringBootTest
 public class VideoServiceTests {
 
@@ -57,17 +59,19 @@ public class VideoServiceTests {
 
 	@Test
 	void findAllVideosTest() {
-		assertThat(vService.findAllVideoTitle()).isNotEmpty()
-				.allSatisfy(videoName -> assertThat(videoExtensions.stream()
-						.filter(extension -> videoName.contains((extension)))
-						.collect(Collectors.toUnmodifiableList())).isEmpty());
+		StepVerifier.create(vService.findAllVideoTitle())
+				.thenConsumeWhile(videoName -> videoExtensions.stream()
+						.filter(ext -> videoName.contains(ext))
+						.collect(Collectors.toUnmodifiableList())
+						.isEmpty())
+				.expectComplete();
 	}
 
 	@Test
 	void findAllVideosPaginationTest() {
-		assertThat(vService.findAllVideoTitle())
-				.isNotEmpty()
-				.hasSize(PageableMapper.DEFAULT_PAGE_REQUEST.getPageSize());
+		StepVerifier.create(vService.findAllVideoTitle())
+				.expectNextCount(PageableMapper.DEFAULT_PAGE_REQUEST.getPageSize())
+				.expectComplete();
 	}
 
 	@Test

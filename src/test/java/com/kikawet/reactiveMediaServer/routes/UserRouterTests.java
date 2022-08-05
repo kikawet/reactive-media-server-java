@@ -24,7 +24,7 @@ import com.kikawet.reactiveMediaServer.model.Video;
 import com.kikawet.reactiveMediaServer.model.WatchedVideo;
 import com.kikawet.reactiveMediaServer.service.UserService;
 
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 @SpringBootTest
 public class UserRouterTests extends BaseRouterTests {
@@ -41,12 +41,12 @@ public class UserRouterTests extends BaseRouterTests {
 
 	@BeforeEach
 	void setUp() {
-		when(us.getHistoryByLogin(anyString(), any())).thenReturn(Mono.error(new UnauthorizedUserException()));
-		when(us.getHistoryByLogin(eq("test"), any())).thenReturn(Mono.just(watchedVideos.stream()));
+		when(us.getHistoryByLogin(anyString(), any())).thenReturn(Flux.error(new UnauthorizedUserException()));
+		when(us.getHistoryByLogin(eq("test"), any())).thenReturn(Flux.fromStream(watchedVideos.stream()));
 	}
 
 	@Test
-	void getHistoryByLoginTest(@Autowired RouterFunction<?> getHistoryByLogin) {
+	void getHistoryByLoginTest(@Autowired final RouterFunction<?> getHistoryByLogin) {
 		getWebTestClient(getHistoryByLogin)
 				.get()
 				.uri("/user/test/history")
@@ -63,7 +63,7 @@ public class UserRouterTests extends BaseRouterTests {
 	}
 
 	@Test
-	void getHistoryByLoginThrowsTest(@Autowired RouterFunction<?> getHistoryByLogin) {
+	void getHistoryByLoginThrowsTest(@Autowired final RouterFunction<?> getHistoryByLogin) {
 		getWebTestClient(getHistoryByLogin)
 				.get()
 				.uri("/user/null/history")

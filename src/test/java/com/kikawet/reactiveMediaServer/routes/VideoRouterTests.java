@@ -22,6 +22,8 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
 import com.kikawet.reactiveMediaServer.service.VideoService;
 
+import reactor.core.publisher.Flux;
+
 @SpringBootTest
 public class VideoRouterTests extends BaseRouterTests {
 
@@ -33,13 +35,13 @@ public class VideoRouterTests extends BaseRouterTests {
 
 	@BeforeEach
 	void setUp() {
-		when(vs.findAllVideoTitle(any())).thenReturn(videosList.stream());
+		when(vs.findAllVideoTitle(any())).thenReturn(Flux.fromStream(videosList.stream()));
 		when(vs.findVideoByName(anyString())).thenThrow(ResourceNotFoundException.class);
 		when(vs.findVideoByName(eq("mockVideo"))).thenReturn(mockVideo);
 	}
 
 	@Test
-	void findAllVideoTitleRouteTest(@Autowired RouterFunction<?> findAllVideoTitleRoute) {
+	void findAllVideoTitleRouteTest(@Autowired final RouterFunction<?> findAllVideoTitleRoute) {
 		getWebTestClient(findAllVideoTitleRoute)
 				.get()
 				.uri("/video")
@@ -53,7 +55,7 @@ public class VideoRouterTests extends BaseRouterTests {
 	}
 
 	@Test
-	void findVideoByNameRouteTest(@Autowired RouterFunction<?> findVideoByNameRoute) throws IOException {
+	void findVideoByNameRouteTest(@Autowired final RouterFunction<?> findVideoByNameRoute) throws IOException {
 		getWebTestClient(findVideoByNameRoute)
 				.get()
 				.uri("/video/mockVideo")
@@ -67,7 +69,7 @@ public class VideoRouterTests extends BaseRouterTests {
 	}
 
 	@Test
-	void findVideoByNameRouteThrowsTest(@Autowired RouterFunction<?> findVideoByNameRoute) throws IOException {
+	void findVideoByNameRouteThrowsTest(@Autowired final RouterFunction<?> findVideoByNameRoute) throws IOException {
 		getWebTestClient(findVideoByNameRoute)
 				.get()
 				.uri("/video/unknown")

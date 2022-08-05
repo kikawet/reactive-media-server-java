@@ -5,7 +5,6 @@ import java.util.concurrent.Executors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;

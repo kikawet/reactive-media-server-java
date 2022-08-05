@@ -26,7 +26,6 @@ import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
 import com.kikawet.reactiveMediaServer.model.Video;
 import com.kikawet.reactiveMediaServer.service.VideoService;
 
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Configuration
@@ -41,11 +40,7 @@ public class VideoRouter {
 	@Bean
 	RouterFunction<ServerResponse> findAllVideoTitleRoute() {
 		return route(GET("/video"), req -> ok()
-				.body(
-						Flux.fromStream(
-								videos.findAllVideoTitle(
-										pm.getPageable(req)))
-								.collectList(),
+				.body(videos.findAllVideoTitle(pm.getPageable(req)).collectList(),
 						List.class));
 	}
 
@@ -62,7 +57,7 @@ public class VideoRouter {
 		});
 	}
 
-	public Mono<ServerResponse> findVideoByNameHandler(ServerRequest serverRequest) {
+	public Mono<ServerResponse> findVideoByNameHandler(final ServerRequest serverRequest) {
 		final String name = serverRequest.pathVariable("name");
 
 		try {
@@ -72,7 +67,7 @@ public class VideoRouter {
 			return ok()
 					.contentType(MediaType.asMediaType(MimeType.valueOf("video/" + mimeType)))
 					.body(Mono.just(video), Resource.class);
-		} catch (ResourceNotFoundException rnfe) {
+		} catch (final ResourceNotFoundException rnfe) {
 			return notFound().build();
 		}
 	}

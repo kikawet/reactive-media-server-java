@@ -1,7 +1,6 @@
 package com.kikawet.reactiveMediaServer.service;
 
 import java.util.Collection;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -30,24 +29,24 @@ public class UserService {
 	@Autowired
 	private Scheduler scheduler;
 
-	public Mono<Stream<WatchedVideo>> getHistoryByLogin(String login) {
+	public Flux<WatchedVideo> getHistoryByLogin(final String login) {
 		return this.getHistoryByLogin(login, PageableMapper.DEFAULT_PAGE_REQUEST);
 	}
 
-	public Mono<Stream<WatchedVideo>> getHistoryByLogin(String login, Pageable page) {
-		return validateLogin(login).map(user ->
-
-		user.getHistory()
-			.skip(page.getOffset())
-			.limit(page.getPageSize()));
+	public Flux<WatchedVideo> getHistoryByLogin(final String login, final Pageable page) {
+		return validateLogin(login)
+				.map(user -> user.getHistory()
+						.skip(page.getOffset())
+						.limit(page.getPageSize()))
+				.flatMapMany(Flux::fromStream);
 	}
 
-	public Mono<Boolean> updateHistoryByLogin(String login, Collection<WatchedVideoDTO> newWatches) {
+	public Mono<Boolean> updateHistoryByLogin(final String login, final Collection<WatchedVideoDTO> newWatches) {
 		return validateLogin(login).flatMap(user ->
 
 		Flux.concat(newWatches.stream().map(dto -> {
 			return videoService.findVideoByTitle(dto.getTitle()).map(video -> {
-				WatchedVideo wv = new WatchedVideo();
+				final WatchedVideo wv = new WatchedVideo();
 
 				wv.setUser(user);
 				wv.setVideo(video);
@@ -62,9 +61,9 @@ public class UserService {
 				.reduce(true, (accum, value) -> accum && value));
 	}
 
-	private Mono<User> validateLogin(final String login){
+	private Mono<User> validateLogin(final String login) {
 		return Mono.fromCallable(() -> users.findByLogin(login))
-		.publishOn(scheduler)
-		.switchIfEmpty(Mono.error(new UnauthorizedUserException()));
+				.publishOn(scheduler)
+				.switchIfEmpty(Mono.error(new UnauthorizedUserException()));
 	}
 }
