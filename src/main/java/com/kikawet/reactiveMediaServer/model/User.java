@@ -37,7 +37,7 @@ public class User {
 	@Transient
 	List<WatchedVideo> history = new ArrayList<>();
 
-	public Stream<Video> getVideos() {
+	public Stream<Video> getAvailableVideos() {
 		return availableVideos.stream();
 	}
 

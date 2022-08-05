@@ -27,6 +27,7 @@ import com.kikawet.reactiveMediaServer.model.WatchedVideo;
 import com.kikawet.reactiveMediaServer.service.UserService;
 import com.kikawet.reactiveMediaServer.validation.WatcherVideoDTOValidationHandler;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Configuration
@@ -43,6 +44,11 @@ public class UserRouter {
 	@Bean
 	RouterFunction<ServerResponse> getHistoryByLogin() {
 		return route(GET("/user/{login}/history"), this::getHistoryByLoginHandler);
+	}
+
+	@Bean
+	RouterFunction<ServerResponse> getAvailableVideosByLogin() {
+		return route(GET("/user/{login}/videos"), this::getAvailableVideosByLoginHandler);
 	}
 
 	@Bean
@@ -78,12 +84,22 @@ public class UserRouter {
 		final String login = serverRequest.pathVariable("login");
 		final Pageable page = pm.getPageable(serverRequest);
 
-		return users.getHistoryByLogin(login, page)
-				.map(WatchedVideo::toDTO)
-				.collectList()
-				.flatMap(dtos -> ok()
+		return fluxToResponse(users.getHistoryByLogin(login, page)
+				.map(WatchedVideo::toDTO));
+	}
+
+	public Mono<ServerResponse> getAvailableVideosByLoginHandler(final ServerRequest serverRequest) {
+		final String login = serverRequest.pathVariable("login");
+		final Pageable page = pm.getPageable(serverRequest);
+
+		return fluxToResponse(users.getAvailableVideosByLogin(login, page));
+	}
+
+	private Mono<ServerResponse> fluxToResponse(Flux<?> objects) {
+		return objects.collectList()
+				.flatMap(items -> ok()
 						.contentType(MediaType.APPLICATION_JSON)
-						.body(Mono.just(dtos), List.class))
+						.body(Mono.just(items), List.class))
 				.onErrorResume(UnauthorizedUserException.class, e -> status(HttpStatus.UNAUTHORIZED).build());
 	}
 }

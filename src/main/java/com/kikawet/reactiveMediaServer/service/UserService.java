@@ -10,6 +10,7 @@ import com.kikawet.reactiveMediaServer.beans.PageableMapper;
 import com.kikawet.reactiveMediaServer.dto.WatchedVideoDTO;
 import com.kikawet.reactiveMediaServer.exception.UnauthorizedUserException;
 import com.kikawet.reactiveMediaServer.model.User;
+import com.kikawet.reactiveMediaServer.model.Video;
 import com.kikawet.reactiveMediaServer.model.WatchedVideo;
 import com.kikawet.reactiveMediaServer.repository.UserRepository;
 
@@ -36,6 +37,19 @@ public class UserService {
 	public Flux<WatchedVideo> getHistoryByLogin(final String login, final Pageable page) {
 		return validateLogin(login)
 				.map(user -> user.getHistory()
+						.skip(page.getOffset())
+						.limit(page.getPageSize()))
+				.flatMapMany(Flux::fromStream);
+	}
+
+	public Flux<Video> getAvailableVideosByLogin(final String login) {
+		return this.getAvailableVideosByLogin(login, PageableMapper.DEFAULT_PAGE_REQUEST);
+	}
+
+	
+	public Flux<Video> getAvailableVideosByLogin(final String login, final Pageable page) {
+		return validateLogin(login)
+				.map(user -> user.getAvailableVideos()
 						.skip(page.getOffset())
 						.limit(page.getPageSize()))
 				.flatMapMany(Flux::fromStream);

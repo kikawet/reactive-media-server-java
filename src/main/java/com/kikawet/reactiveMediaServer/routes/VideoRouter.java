@@ -52,8 +52,10 @@ public class VideoRouter {
 	@Bean
 	RouterFunction<ServerResponse> createVideo() {
 		return route(POST("/video/{name}"), req -> {
-			final String name = req.pathVariable("name");
-			return status(HttpStatus.CREATED).body(videos.createVideo(name), Video.class);
+			return status(HttpStatus.CREATED)
+					.body(
+							videos.createVideo(req.pathVariable("name")),
+							Video.class);
 		});
 	}
 
