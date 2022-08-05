@@ -72,11 +72,9 @@ public class VideoService {
 	}
 
 	public Mono<Video> createVideo(final String title) {
-		final Video v = new Video(title);
-
 		return this.findVideoByTitle(title)
-				.publishOn(scheduler)
-				.onErrorResume(e -> Mono.fromCallable(() -> this.videos.save(v)))
+				.onErrorResume(e -> Mono.fromCallable(() -> this.videos.saveAndFlush(new Video(title))))
 				.publishOn(scheduler);
+
 	}
 }
