@@ -1,4 +1,4 @@
-# Reactive Media Server
+# Reactive Media Server (JAVA)
 
 As for today the Spring framework is not ready for reactive programming since the transactions don't propagate into anonymous functions and the R2DBC ecosystem is not mature. I'm going to stale the project since I think I reached a decent state into the project. So far the test pass but no more promises can be made.
 
