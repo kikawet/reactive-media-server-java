@@ -1,7 +1,6 @@
 package com.kikawet.reactiveMediaServer.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +12,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.kikawet.reactiveMediaServer.exception.UnauthorizedUserException;
 import com.kikawet.reactiveMediaServer.model.User;
 import com.kikawet.reactiveMediaServer.repository.UserRepository;
+
+import reactor.test.StepVerifier;
 
 @SpringBootTest
 public class UserServiceTests {
@@ -28,12 +29,17 @@ public class UserServiceTests {
 		User u = new User();
 		u.setLogin("test");
 
-		when(users.findById("test")).thenReturn(u);
+		when(users.findByLogin(u.getLogin())).thenReturn(u);
 	}
 
 	@Test
 	void getHistoryByLoginThrowsTest() {
-		assertThat(uService.getHistoryByLogin("test")).doesNotContainNull();
-		assertThrows(UnauthorizedUserException.class, () -> uService.getHistoryByLogin("null"));
+		StepVerifier.create(uService.getHistoryByLogin("test"))
+				.assertNext(history -> assertThat(history).isNotNull())
+				.expectComplete();
+
+		StepVerifier.create(uService.getHistoryByLogin("null"))
+				.expectError(UnauthorizedUserException.class)
+				.verify();
 	}
 }

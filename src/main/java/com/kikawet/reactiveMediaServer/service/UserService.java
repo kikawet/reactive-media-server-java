@@ -1,8 +1,6 @@
 package com.kikawet.reactiveMediaServer.service;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -12,8 +10,13 @@ import com.kikawet.reactiveMediaServer.beans.PageableMapper;
 import com.kikawet.reactiveMediaServer.dto.WatchedVideoDTO;
 import com.kikawet.reactiveMediaServer.exception.UnauthorizedUserException;
 import com.kikawet.reactiveMediaServer.model.User;
+import com.kikawet.reactiveMediaServer.model.Video;
 import com.kikawet.reactiveMediaServer.model.WatchedVideo;
 import com.kikawet.reactiveMediaServer.repository.UserRepository;
+
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 
 @Service
 public class UserService {
@@ -24,41 +27,57 @@ public class UserService {
 	@Autowired
 	private VideoService videoService;
 
-	public Stream<WatchedVideo> getHistoryByLogin(String login) {
+	@Autowired
+	private Scheduler scheduler;
+
+	public Flux<WatchedVideo> getHistoryByLogin(final String login) {
 		return this.getHistoryByLogin(login, PageableMapper.DEFAULT_PAGE_REQUEST);
 	}
 
-	public Stream<WatchedVideo> getHistoryByLogin(String login, Pageable page) {
-		User user = validateLogin(login);
-		return user.getHistory()
-				.skip(page.getOffset())
-				.limit(page.getPageSize());
+	public Flux<WatchedVideo> getHistoryByLogin(final String login, final Pageable page) {
+		return validateLogin(login)
+				.map(user -> user.getHistory()
+						.skip(page.getOffset())
+						.limit(page.getPageSize()))
+				.flatMapMany(Flux::fromStream);
 	}
 
-	public boolean updateHistoryByLogin(String login, Collection<WatchedVideoDTO> newWatches) {
-		User user = validateLogin(login);
-
-		boolean result = user.appendHistory(newWatches.stream().map(dto -> {
-			WatchedVideo wv = new WatchedVideo();
-
-			wv.setUser(user);
-			wv.setVideo(videoService.findVideoByTitle(dto.getTitle()));
-			wv.setTime(dto.getTime());
-			wv.setCompletionPercentage(dto.getCompletionPercentage());
-
-			return wv;
-		}).collect(Collectors.toList()));
-
-		return result;
+	public Flux<Video> getAvailableVideosByLogin(final String login) {
+		return this.getAvailableVideosByLogin(login, PageableMapper.DEFAULT_PAGE_REQUEST);
 	}
 
-	private User validateLogin(String login) {
-		User u = users.findById(login);
+	
+	public Flux<Video> getAvailableVideosByLogin(final String login, final Pageable page) {
+		return validateLogin(login)
+				.map(user -> user.getAvailableVideos()
+						.skip(page.getOffset())
+						.limit(page.getPageSize()))
+				.flatMapMany(Flux::fromStream);
+	}
 
-		if (u == null) {
-			throw new UnauthorizedUserException();
-		}
+	public Mono<Boolean> updateHistoryByLogin(final String login, final Collection<WatchedVideoDTO> newWatches) {
+		return validateLogin(login).flatMap(user ->
 
-		return u;
+		Flux.concat(newWatches.stream().map(dto -> {
+			return videoService.findVideoByTitle(dto.getTitle()).map(video -> {
+				final WatchedVideo wv = new WatchedVideo();
+
+				wv.setUser(user);
+				wv.setVideo(video);
+				wv.setTime(dto.getTime());
+				wv.setCompletionPercentage(dto.getCompletionPercentage());
+
+				return user.addWatchVideo(wv);
+			});
+
+		}).toList())
+				.takeUntil(x -> !x)
+				.reduce(true, (accum, value) -> accum && value));
+	}
+
+	private Mono<User> validateLogin(final String login) {
+		return Mono.fromCallable(() -> users.findByLogin(login))
+				.publishOn(scheduler)
+				.switchIfEmpty(Mono.error(new UnauthorizedUserException()));
 	}
 }

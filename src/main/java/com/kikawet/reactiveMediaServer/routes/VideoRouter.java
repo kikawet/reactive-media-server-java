@@ -1,9 +1,11 @@
 package com.kikawet.reactiveMediaServer.routes;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 import static org.springframework.web.reactive.function.server.ServerResponse.notFound;
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
+import static org.springframework.web.reactive.function.server.ServerResponse.status;
 
 import java.util.List;
 
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
 import org.springframework.util.StringUtils;
@@ -20,9 +23,9 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 import com.kikawet.reactiveMediaServer.beans.PageableMapper;
 import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
+import com.kikawet.reactiveMediaServer.model.Video;
 import com.kikawet.reactiveMediaServer.service.VideoService;
 
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Configuration
@@ -37,11 +40,7 @@ public class VideoRouter {
 	@Bean
 	RouterFunction<ServerResponse> findAllVideoTitleRoute() {
 		return route(GET("/video"), req -> ok()
-				.body(
-						Flux.fromStream(
-								videos.findAllVideoTitle(
-										pm.getPageable(req)))
-								.collectList(),
+				.body(videos.findAllVideoTitle(pm.getPageable(req)).collectList(),
 						List.class));
 	}
 
@@ -50,7 +49,17 @@ public class VideoRouter {
 		return route(GET("/video/{name}"), this::findVideoByNameHandler);
 	}
 
-	public Mono<ServerResponse> findVideoByNameHandler(ServerRequest serverRequest) {
+	@Bean
+	RouterFunction<ServerResponse> createVideo() {
+		return route(POST("/video/{name}"), req -> {
+			return status(HttpStatus.CREATED)
+					.body(
+							videos.createVideo(req.pathVariable("name")),
+							Video.class);
+		});
+	}
+
+	public Mono<ServerResponse> findVideoByNameHandler(final ServerRequest serverRequest) {
 		final String name = serverRequest.pathVariable("name");
 
 		try {
@@ -60,7 +69,7 @@ public class VideoRouter {
 			return ok()
 					.contentType(MediaType.asMediaType(MimeType.valueOf("video/" + mimeType)))
 					.body(Mono.just(video), Resource.class);
-		} catch (ResourceNotFoundException rnfe) {
+		} catch (final ResourceNotFoundException rnfe) {
 			return notFound().build();
 		}
 	}

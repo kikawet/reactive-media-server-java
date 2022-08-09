@@ -4,7 +4,6 @@ import static org.springframework.util.StringUtils.stripFilenameExtension;
 
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +18,10 @@ import com.kikawet.reactiveMediaServer.exception.ResourceNotFoundException;
 import com.kikawet.reactiveMediaServer.model.Video;
 import com.kikawet.reactiveMediaServer.repository.VideoRepository;
 
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+
 @Service
 public class VideoService {
 
@@ -31,17 +34,16 @@ public class VideoService {
 	@Autowired
 	private VideoRepository videos;
 
-	public Video findVideoByTitle(String title) {
-		Video v = videos.findVideoByTitle(title);
+	@Autowired
+	private Scheduler scheduler;
 
-		if (v == null) {
-			throw new ResourceNotFoundException(title);
-		}
-
-		return v;
+	public Mono<Video> findVideoByTitle(final String title) {
+		return Mono.fromCallable(() -> videos.findByTitle(title))
+				.publishOn(scheduler)
+				.switchIfEmpty(Mono.error(new ResourceNotFoundException(title)));
 	}
 
-	public Resource findVideoByName(String fileName) {
+	public Resource findVideoByName(final String fileName) {
 		Optional<Path> videoPath = resourceLoader
 				.listFiles(videoBasePath)
 				.parallel()
@@ -56,16 +58,23 @@ public class VideoService {
 		return resourceLoader.getResource(videoPath.get().toString());
 	}
 
-	public Stream<String> findAllVideoTitle(final Pageable page) {
-		return resourceLoader.listFiles(videoBasePath)
+	public Flux<String> findAllVideoTitle(final Pageable page) {
+		return Flux.fromStream(resourceLoader.listFiles(videoBasePath)
 				.skip(page.getOffset())
 				.limit(page.getPageSize())
 				.map(Path::getFileName)
 				.map(Path::toString)
-				.map(StringUtils::stripFilenameExtension);
+				.map(StringUtils::stripFilenameExtension));
 	}
 
-	public Stream<String> findAllVideoTitle() {
+	public Flux<String> findAllVideoTitle() {
 		return this.findAllVideoTitle(PageableMapper.DEFAULT_PAGE_REQUEST);
+	}
+
+	public Mono<Video> createVideo(final String title) {
+		return this.findVideoByTitle(title)
+				.onErrorResume(e -> Mono.fromCallable(() -> this.videos.saveAndFlush(new Video(title))))
+				.publishOn(scheduler);
+
 	}
 }
